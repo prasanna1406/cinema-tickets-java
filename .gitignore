@@ -1,0 +1,15 @@
+# Java classes and jar files
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven build output
+target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
