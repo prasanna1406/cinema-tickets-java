@@ -38,18 +38,12 @@ public record TicketPurchase(Map<TicketTypeRequest.Type, Long> ticketCounts) {
         return getCount(TicketTypeRequest.Type.ADULT) + getCount(TicketTypeRequest.Type.CHILD);
     }
 
-    public int getCount(TicketTypeRequest.Type type) {
+    private int getCount(TicketTypeRequest.Type type) {
         return ticketCounts.getOrDefault(type, 0L).intValue();
     }
 
-    private void validate(Map<TicketTypeRequest.Type, Long> counts) {
-        for (long count : counts.values()) {
-            if (count > Integer.MAX_VALUE) {
-                throw new InvalidPurchaseException("Ticket count exceeds maximum allowed value.");
-            }
-        }
-
-        long total = counts.values().stream().mapToLong(Long::longValue).sum();
+    private void validate(Map<TicketTypeRequest.Type, Long> ticketCounts) {
+        long total = ticketCounts.values().stream().mapToLong(Long::longValue).sum();
 
         if (total <= 0) {
             throw new InvalidPurchaseException("Purchase must include at least one ticket.");
@@ -58,9 +52,9 @@ public record TicketPurchase(Map<TicketTypeRequest.Type, Long> ticketCounts) {
             throw new InvalidPurchaseException("Max tickets exceeded. Maximum allowed is " + MAX_TICKETS);
         }
 
-        int adults = getCount(TicketTypeRequest.Type.ADULT);
-        int children = getCount(TicketTypeRequest.Type.CHILD);
-        int infants = getCount(TicketTypeRequest.Type.INFANT);
+        int adults = ticketCounts.getOrDefault(TicketTypeRequest.Type.ADULT, 0L).intValue();
+        int children = ticketCounts.getOrDefault(TicketTypeRequest.Type.CHILD, 0L).intValue();
+        int infants = ticketCounts.getOrDefault(TicketTypeRequest.Type.INFANT, 0L).intValue();
 
         if ((children > 0 || infants > 0) && adults == 0) {
             throw new InvalidPurchaseException("Adult ticket required for Child/Infant purchase.");
